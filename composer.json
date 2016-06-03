@@ -1,5 +1,5 @@
 {
-  "name": "facebook/fbshipit",
+  "name": "exponentjs/fbshipit",
   "description": "Library for syncing code repositories",
   "keywords": [ "Facebook", "FBShipIt", "Hack" ],
   "license": [ "BSD-3-Clause" ],
