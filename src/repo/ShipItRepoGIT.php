@@ -90,12 +90,18 @@ class ShipItRepoGIT
     list($envelope, $message) = explode("\n\n", trim($header), 2);
 
     $message = trim($message);
-    if (strpos($message, "\n---\n") !== false) {
-      // Get rid of the file list
-      $parts = explode("\n---\n", $message);
-      array_pop($parts);
-      $message = implode("\n---\n", $parts);
+
+    $start_of_filelist = strrpos($message, "\n---\n ");
+    if ($start_of_filelist !== false) {
+      // Get rid of the file list when a summary is
+      // included in the commit message
+      $message = trim(substr($message, 0, $start_of_filelist));
+    } else if (strpos($message, "---\n ") === 0) {
+      // Git rid of the file list in the situation where there is
+      // no summary in the commit message (when it starts with "---\n").
+      $message = '';
     }
+
     $changeset = (new ShipItChangeset())->withMessage($message);
 
     $envelope = str_replace(["\n\t","\n "], ' ', $envelope);
@@ -321,7 +327,7 @@ class ShipItRepoGIT
       $dest->getPath(),
       'tar',
       'x',
-    ))->runSynchronously();
+    ))->setStdIn($tar)->runSynchronously();
 
     return shape('tempDir' => $dest, 'revision' => $rev);
   }
